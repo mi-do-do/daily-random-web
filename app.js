@@ -45,9 +45,41 @@ function pickFood(){
   playVideo('assets/video/food_run_cat.mp4','고양이 셰프가 음식을 가져오는 중',()=>foodResult(picked));
 }
 function playVideo(src,caption,done){
-  const overlay=document.createElement('div'); overlay.className='media-stage'; overlay.innerHTML=`<video playsinline autoplay preload="auto"><source src="${src}" type="video/mp4"></video><div class="media-caption">${caption}</div>`; document.body.appendChild(overlay);
-  const v=overlay.querySelector('video'); let finished=false; const finish=()=>{if(finished)return;finished=true;overlay.remove();const flash=document.createElement('div');flash.className='flash';document.body.appendChild(flash);setTimeout(()=>{flash.remove();done()},480)};
-  v.addEventListener('ended',finish); v.addEventListener('error',()=>setTimeout(finish,900)); setTimeout(()=>{if(v.paused)v.play().catch(()=>setTimeout(finish,1200))},250); setTimeout(finish,15000);
+  const overlay=document.createElement('div');
+  overlay.className='media-stage';
+  overlay.innerHTML=`<div class="media-loading" data-video-loading>영상 준비 중...</div><video playsinline preload="auto"><source src="${src}" type="video/mp4"></video><div class="media-caption">${caption}</div><button class="media-start" data-video-start>영상 재생</button><button class="media-skip" data-video-skip>건너뛰기</button>`;
+  document.body.appendChild(overlay);
+
+  const v=overlay.querySelector('video');
+  const loading=overlay.querySelector('[data-video-loading]');
+  const startButton=overlay.querySelector('[data-video-start]');
+  let finished=false;
+  const safetyTimer=setTimeout(finish,20000);
+
+  function finish(){
+    if(finished)return;
+    finished=true;
+    clearTimeout(safetyTimer);
+    v.pause();
+    overlay.remove();
+    const flash=document.createElement('div');
+    flash.className='flash';
+    document.body.appendChild(flash);
+    setTimeout(()=>{flash.remove();done()},480);
+  }
+
+  const beginPlayback=()=>{
+    startButton.classList.remove('visible');
+    v.play().catch(()=>startButton.classList.add('visible'));
+  };
+  v.addEventListener('loadeddata',()=>loading.classList.add('hidden'));
+  v.addEventListener('playing',()=>{loading.classList.add('hidden');startButton.classList.remove('visible')});
+  v.addEventListener('ended',finish);
+  v.addEventListener('error',()=>{loading.textContent='영상을 불러오지 못해 결과로 이동합니다.';setTimeout(finish,900)});
+  startButton.addEventListener('click',beginPlayback);
+  overlay.querySelector('[data-video-skip]').addEventListener('click',finish);
+  v.load();
+  beginPlayback();
 }
 function foodResult(f){
   state.route='foodResult'; layout('오늘의 추천',`<main class="screen"><section class="card"><img class="food-photo" src="${f.image}" alt="${f.name}" onerror="this.style.display='none'"><span class="result-badge">${f.category}</span><h2 class="result-name">${f.name}</h2><p>${f.message}</p><button class="primary wide" data-again>다시 추천받기</button><button class="secondary wide" style="margin-top:8px" data-change>카테고리 바꾸기</button></section></main>`);

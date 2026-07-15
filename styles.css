@@ -79,6 +79,12 @@ button { cursor: pointer; }
 .media-stage { position: fixed; inset: 0; z-index: 50; background: #000; display: flex; flex-direction: column; justify-content: center; }
 .media-stage video { width: min(100%, 1100px); max-height: 82dvh; margin: 0 auto; object-fit: contain; }
 .media-caption { color: white; text-align: center; padding: 18px; font-weight: 800; }
+.media-loading { position: absolute; inset: 0; display: grid; place-items: center; color: white; font-weight: 800; background: #000; z-index: 1; transition: opacity .2s; }
+.media-loading.hidden { opacity: 0; pointer-events: none; }
+.media-start, .media-skip { position: absolute; z-index: 2; min-height: 44px; border: 1px solid rgba(255,255,255,.55); background: rgba(21,25,34,.86); color: white; padding: 0 18px; font-weight: 800; }
+.media-start { left: 50%; top: 50%; transform: translate(-50%,-50%); display: none; }
+.media-start.visible { display: block; }
+.media-skip { right: max(16px,env(safe-area-inset-right)); top: max(16px,env(safe-area-inset-top)); }
 .flash { position: fixed; inset: 0; z-index: 60; background: white; animation: flash .55s both; }
 @keyframes flash { 0%,100% { opacity: 0; } 35% { opacity: 1; } }
 
