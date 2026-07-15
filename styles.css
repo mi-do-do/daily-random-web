@@ -92,13 +92,28 @@ button { cursor: pointer; }
 .result-name { margin: 18px 0 8px; font-size: 34px; }
 .result-badge { display: inline-block; padding: 6px 10px; background: #ffe2d8; color: #a93117; font-size: 12px; font-weight: 900; }
 
-.fortune-card { width: min(78%, 290px); aspect-ratio: .68; margin: 22px auto; border: 0; perspective: 1000px; background: transparent; }
-.fortune-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.2,.8,.2,1); }
+.fortune-card {
+  display: block;
+  position: relative;
+  z-index: 1;
+  width: clamp(260px, 34vw, 360px);
+  height: clamp(382px, 50vw, 530px);
+  margin: 30px auto;
+  padding: 0;
+  border: 0;
+  perspective: 1000px;
+  background: transparent;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.fortune-inner { display: block; width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.2,.8,.2,1); }
 .fortune-card.flipped .fortune-inner { transform: rotateY(180deg); }
-.fortune-face { position: absolute; inset: 0; backface-visibility: hidden; display: grid; place-items: center; padding: 24px; border: 6px solid #d8bd75; background: #27184d; color: white; text-align: center; }
+.fortune-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: grid; place-items: center; padding: 30px; border: 6px solid #d8bd75; background: #27184d; color: white; text-align: center; box-shadow: 0 18px 44px rgba(23,26,33,.24); }
 .fortune-front { font-size: 64px; }
 .fortune-back { transform: rotateY(180deg); background: #fff9e9; color: var(--ink); }
 .fortune-back strong { font-size: 25px; }
+.fortune-card:hover .fortune-inner { filter: brightness(1.06); }
+.fortune-card:focus-visible { outline: 4px solid var(--gold); outline-offset: 6px; }
 
 .game-board { min-height: 560px; position: relative; overflow: hidden; background: var(--navy); color: white; border: 4px solid #303746; margin: 16px 0; padding: 24px; }
 .roulette { width: 280px; height: 280px; max-width: 85vw; max-height: 85vw; margin: 16px auto; border-radius: 50%; border: 10px solid white; background: conic-gradient(#ff6542 0 25%, #e5aa27 0 50%, #168b72 0 75%, #6744c7 0); transition: transform 3.2s cubic-bezier(.12,.72,.18,1); }
@@ -127,5 +142,6 @@ button { cursor: pointer; }
   .card { padding: 18px; margin-bottom: 12px; }
   .game-board { min-height: 410px; padding: 16px; }
   .food-photo { aspect-ratio: 1.25; }
+  .fortune-card { width: min(82vw, 330px); height: min(120vw, 486px); margin: 22px auto; }
   .ad-slot { height: calc(68px + env(safe-area-inset-bottom)); }
 }

@@ -99,8 +99,10 @@ function fortuneCard(){
   const seed=[...`${new Date().toISOString().slice(0,10)}${state.fortuneMode}${state.fortuneSign}${state.fortuneYear}`].reduce((a,c)=>a+c.charCodeAt(0),0);
   const tones=['서두르기보다 순서를 지키면 흐름이 좋아집니다.','작은 제안을 먼저 건네면 뜻밖의 기회가 열립니다.','익숙한 선택보다 한 걸음 다른 방향이 유리합니다.','정리하지 못한 일을 마무리할수록 마음이 가벼워집니다.'];
   state.fortune={title:['차분한 전환의 날','기회가 가까운 날','관계가 풀리는 날','집중력이 빛나는 날'][seed%4],body:tones[(seed*7)%4],score:72+(seed%24)};
-  state.route='fortuneCard';layout('운세 카드',`<main class="screen"><section class="card dark" style="text-align:center"><h2>카드를 터치하세요</h2><p>뒤집는 순간 오늘의 흐름이 공개됩니다.</p></section><button class="fortune-card" data-flip><span class="fortune-inner"><span class="fortune-face fortune-front">✦</span><span class="fortune-face fortune-back"><span><strong>${state.fortune.title}</strong><p>${state.fortune.body}</p><b>오늘의 흐름 ${state.fortune.score}점</b></span></span></span></button><button class="secondary wide" data-retry>다시 보기</button></main>`);
-  app.querySelector('[data-flip]').onclick=e=>e.currentTarget.classList.add('flipped');app.querySelector('[data-retry]').onclick=fortune;
+  state.route='fortuneCard';layout('운세 카드',`<main class="screen"><section class="card dark" style="text-align:center"><h2>카드를 터치하세요</h2><p>뒤집는 순간 오늘의 흐름이 공개됩니다.</p></section><button type="button" class="fortune-card" data-flip aria-label="운세 카드 뒤집기"><span class="fortune-inner"><span class="fortune-face fortune-front" aria-hidden="true">✦</span><span class="fortune-face fortune-back"><span><strong>${state.fortune.title}</strong><p>${state.fortune.body}</p><b>오늘의 흐름 ${state.fortune.score}점</b></span></span></span></button><button class="secondary wide" data-retry>다시 보기</button></main>`);
+  const flipCard=app.querySelector('[data-flip]');
+  flipCard.addEventListener('click',()=>flipCard.classList.add('flipped'));
+  app.querySelector('[data-retry]').onclick=fortune;
 }
 
 const units={길이:{m:1,km:1000,cm:.01,mm:.001,inch:.0254,ft:.3048},무게:{kg:1,g:.001,lb:.453592,oz:.0283495},부피:{L:1,mL:.001,'m³':1000,'컵':.24,'큰술':.015},속도:{'km/h':1,'m/s':3.6,mph:1.609344,knot:1.852},온도:{'°C':'c','°F':'f','K':'k'}};
