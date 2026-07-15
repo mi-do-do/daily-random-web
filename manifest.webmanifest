@@ -1,0 +1,10 @@
+{
+  "name": "일상 랜덤",
+  "short_name": "일상랜덤",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f0e4",
+  "theme_color": "#151922",
+  "lang": "ko",
+  "icons": []
+}
