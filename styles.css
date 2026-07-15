@@ -196,6 +196,18 @@ button { cursor: pointer; }
 @keyframes timingMove { from { left: 1%; } to { left: calc(99% - 18px); } }
 .timing-button { min-width: 220px; min-height: 72px; }
 
+.unity-screen { width: 100%; min-height: calc(100vh - 146px); padding: 18px 28px 104px; background: #10141c; }
+.unity-intro { width: min(100%, 560px); margin: 0 auto 14px; display: flex; align-items: center; justify-content: space-between; gap: 20px; color: white; }
+.unity-intro div { display: grid; gap: 3px; }
+.unity-intro span { color: var(--gold); font-size: 11px; font-weight: 900; }
+.unity-intro strong { font-size: 24px; }
+.unity-intro small { color: #b9bec8; }
+.unity-intro button { min-height: 46px; padding: 0 18px; white-space: nowrap; }
+.unity-frame-shell { position: relative; width: min(100%, 560px); height: min(calc(100vh - 220px), 880px); min-height: 620px; margin: 0 auto; overflow: hidden; border: 1px solid #343b48; background: #080a0f; box-shadow: 0 18px 52px rgba(0,0,0,.35); }
+.unity-frame { position: relative; z-index: 2; width: 100%; height: 100%; border: 0; background: #080a0f; }
+.unity-loading { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; color: #e6d18e; font-weight: 900; }
+.unity-loading.hidden { display: none; }
+
 .ad-slot { position: fixed; z-index: 15; bottom: 0; left: 50%; transform: translateX(-50%); width: min(100%, 1180px); height: calc(76px + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom); background: #e7f0f2; border-top: 1px solid #cbd9dc; color: #66777c; display: grid; place-items: center; font-size: 11px; }
 
 @media (max-width: 760px) {
@@ -222,5 +234,11 @@ button { cursor: pointer; }
   .daily-actions { grid-template-columns: 1fr; }
   .daily-grid { gap: 6px; }
   .daily-grid button { font-size: 17px; }
+  .unity-screen { min-height: calc(100vh - 130px); padding: 10px 0 78px; }
+  .unity-intro { padding: 0 12px; }
+  .unity-intro small { display: none; }
+  .unity-intro strong { font-size: 19px; }
+  .unity-intro button { min-height: 40px; padding: 0 10px; font-size: 12px; }
+  .unity-frame-shell { width: 100%; height: calc(100vh - 150px); min-height: 560px; border-left: 0; border-right: 0; }
   .ad-slot { height: calc(68px + env(safe-area-inset-bottom)); }
 }

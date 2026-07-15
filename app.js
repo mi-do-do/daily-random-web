@@ -25,12 +25,20 @@ function optionList(items, selected){ return items.map(x=>`<option ${x===selecte
 
 function home(){
   layout('일상 랜덤', `<main class="screen"><section class="hero"><div class="eyebrow">매일의 고민에 유쾌한 답</div><h2>오늘의 선택,<br>가볍게 맡겨보세요</h2><p>먹을 것부터 내기와 짧은 게임까지. 필요한 순간 바로 꺼내 쓰는 일상 도구예요.</p><button class="primary hero-action" data-food>오늘 메뉴 바로 추천</button></section><section class="grid">
-    ${menu('운세보기','띠별·별자리 간이 운세','★','#e5aa27','fortune')}${menu('단위변환기','길이·무게·속도·부피','↔','#168b72','unit')}${menu('랜덤게임','여럿이 함께하는 추첨','◆','#3479d6','random')}${menu('오늘의 게임','매번 달라지는 30초 게임','●','#6744c7','daily')}
+    ${menu('운세보기','띠별·별자리 간이 운세','★','#e5aa27','fortune')}${menu('단위변환기','길이·무게·속도·부피','↔','#168b72','unit')}${menu('랜덤게임','Unity 연출로 즐기는 추첨','◆','#3479d6','unityGames')}${menu('오늘의 게임','Unity로 즐기는 30초 게임','●','#6744c7','unityDaily')}
   </section></main>`, false);
   app.querySelector('[data-food]').onclick=()=>navigate('food');
   app.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>navigate(b.dataset.route));
 }
 function menu(title,desc,symbol,color,route){return `<button class="menu-card" style="--accent:${color}" data-route="${route}"><span class="symbol">${symbol}</span><strong>${title}</strong><small>${desc}</small></button>`}
+
+function unityGames(){unityView('랜덤게임','games','사다리타기·레이싱·룰렛·카드 뽑기')}
+function unityDaily(){unityView('오늘의 게임','daily','들어갈 때마다 달라지는 30초 미니게임')}
+function unityView(title,route,description){
+  layout(title,`<main class="unity-screen"><section class="unity-intro"><div><span>UNITY PLAY</span><strong>${title}</strong><small>${description}</small></div><button class="secondary" data-reload>게임 다시 불러오기</button></section><section class="unity-frame-shell"><div class="unity-loading">Unity 게임을 준비하고 있어요...</div><iframe class="unity-frame" title="${title}" src="unity/index.html?route=${route}" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe></section></main>`);
+  const frame=app.querySelector('.unity-frame');frame.addEventListener('load',()=>app.querySelector('.unity-loading')?.classList.add('hidden'));
+  app.querySelector('[data-reload]').onclick=()=>{const src=frame.src;frame.src='about:blank';setTimeout(()=>frame.src=src,80)};
+}
 
 function food(){
   const cats=['전체','한식','중식','일식','양식','분식','패스트푸드','가벼운식사'];
@@ -242,7 +250,7 @@ function dailyTiming(){
   let attempts=0,total=0;gameShell('오늘의 게임',`<section class="card dark"><div class="eyebrow">TODAY'S 30 SEC</div><h2>타이밍 탭</h2><p>왕복하는 마커가 가운데 영역에 올 때 터치하세요.</p></section><section class="game-board daily-center"><div class="timing-track"><i></i><b data-marker></b></div><button class="primary timing-button" data-timing>지금 터치</button><div class="status" data-status>ATTEMPT 1 / 5</div></section>${dailyButtons()}`);const marker=app.querySelector('[data-marker]'),timingButton=app.querySelector('[data-timing]');timingButton.onclick=()=>{if(attempts>=5)return;const track=marker.parentElement.getBoundingClientRect(),rect=marker.getBoundingClientRect();const center=(rect.left+rect.width/2-track.left)/track.width;const score=Math.max(0,Math.round(100-Math.abs(center-.5)*200));total+=score;attempts++;app.querySelector('[data-status]').textContent=attempts>=5?`결과 ${total} / 500점`:`${score}점 · ATTEMPT ${attempts+1} / 5`;if(attempts>=5){timingButton.disabled=true;finishDailyRecord('timing',total,false,'점')}};bindDailyButtons(dailyTiming)
 }
 
-function render(){({home,food,fortune,fortuneCard,fortuneDetails,unit,random:randomMenu,roulette,cards,ladder,race,daily}[state.route]||home)()}
+function render(){({home,food,fortune,fortuneCard,fortuneDetails,unit,random:randomMenu,roulette,cards,ladder,race,daily,unityGames,unityDaily}[state.route]||home)()}
 render();
 
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('service-worker.js');

@@ -1,5 +1,5 @@
-const CACHE = 'daily-random-v6';
-const CORE = ['./','./index.html','./styles.css?v=6','./app.js?v=6','./manifest.webmanifest'];
+const CACHE = 'daily-random-v8';
+const CORE = ['./','./index.html','./styles.css?v=8','./app.js?v=8','./manifest.webmanifest'];
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)));
