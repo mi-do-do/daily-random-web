@@ -98,6 +98,7 @@ function yearsForZodiac(sign){const idx=zodiacs.indexOf(sign);const out=[];for(l
 function fortuneCard(){
   state.fortuneResults=['오늘','이번 주','이번 달','올해'].map(period=>buildFortune(period));
   state.route='fortuneCard';layout('운세 카드',`<main class="screen fortune-reveal-screen"><section class="card dark fortune-guide"><h2>카드를 터치하세요</h2><p>카드가 뒤집히면 오늘부터 올해까지의 흐름이 공개됩니다.</p></section><button type="button" class="fortune-card" data-flip aria-label="운세 카드 뒤집기"><span class="fortune-inner"><span class="fortune-face fortune-front" aria-hidden="true"><span>✦</span><small>${fortuneProfile()}</small></span><span class="fortune-face fortune-back"><span><strong>운세를 확인했어요</strong><p>결과를 펼치는 중...</p><b>✦</b></span></span></span></button><button class="secondary wide" data-retry>다시 보기</button></main>`);
+  scrollTo(0,0);
   const flipCard=app.querySelector('[data-flip]');
   flipCard.addEventListener('click',()=>{
     if(flipCard.classList.contains('flipped'))return;
@@ -112,6 +113,7 @@ function fortuneDetails(){
   state.route='fortuneDetails';
   const results=state.fortuneResults||['오늘','이번 주','이번 달','올해'].map(period=>buildFortune(period));
   layout('운세 결과',`<main class="screen fortune-results"><section class="fortune-summary"><div class="fortune-star">✦</div><div><span>${state.fortuneMode}</span><h2>${fortuneProfile()}</h2><p>선택한 정보와 기간별 흐름을 조합한 간이 운세입니다.</p></div></section><section class="fortune-period-grid">${results.map(result=>`<article class="fortune-period"><header><span>${result.period}</span><b>${result.score}점</b></header><h3>${result.title}</h3><p>${result.message}</p><footer><span>행운 색 ${result.color}</span><span>행운 숫자 ${result.number}</span></footer></article>`).join('')}</section><button class="primary wide fortune-retry" data-retry>다시 보기</button></main>`);
+  scrollTo(0,0);
   app.querySelector('[data-retry]').onclick=fortune;
 }
 
