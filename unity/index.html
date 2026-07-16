@@ -116,14 +116,17 @@
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+          window.parent.postMessage({ type: "daily-random-unity-progress", progress }, window.location.origin);
               }).then((unityInstance) => {
                 document.querySelector("#unity-loading-bar").style.display = "none";
+                window.parent.postMessage({ type: "daily-random-unity-ready" }, window.location.origin);
                 document.querySelector("#unity-fullscreen-button").onclick = () => {
                   unityInstance.SetFullscreen(1);
                 };
 
               }).catch((message) => {
-                alert(message);
+                window.parent.postMessage({ type: "daily-random-unity-error", message: String(message) }, window.location.origin);
+                console.error(message);
               });
             };
 

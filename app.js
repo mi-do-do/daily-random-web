@@ -35,9 +35,19 @@ function menu(title,desc,symbol,color,route){return `<button class="menu-card" s
 function unityGames(){unityView('랜덤게임','games','사다리타기·레이싱·룰렛·카드 뽑기')}
 function unityDaily(){unityView('오늘의 게임','daily','들어갈 때마다 달라지는 30초 미니게임')}
 function unityView(title,route,description){
-  layout(title,`<main class="unity-screen"><section class="unity-intro"><div><span>UNITY PLAY</span><strong>${title}</strong><small>${description}</small></div><button class="secondary" data-reload>게임 다시 불러오기</button></section><section class="unity-frame-shell"><div class="unity-loading">Unity 게임을 준비하고 있어요...</div><iframe class="unity-frame" title="${title}" src="unity/index.html?route=${route}&v=10" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe></section></main>`);
-  const frame=app.querySelector('.unity-frame');frame.addEventListener('load',()=>app.querySelector('.unity-loading')?.classList.add('hidden'));
-  app.querySelector('[data-reload]').onclick=()=>{const src=frame.src;frame.src='about:blank';setTimeout(()=>frame.src=src,80)};
+  layout(title,`<main class="unity-screen"><section class="unity-intro"><div><span>UNITY PLAY</span><strong>${title}</strong><small>${description}</small></div><button class="secondary" data-reload>게임 다시 불러오기</button></section><section class="unity-frame-shell"><div class="unity-loading">Unity 게임 준비 중 0%</div><iframe class="unity-frame" title="${title}" src="unity/index.html?route=${route}&v=11" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe></section></main>`);
+  const frame=app.querySelector('.unity-frame');
+  const loading=app.querySelector('.unity-loading');
+  if(state.unityMessageHandler)window.removeEventListener('message',state.unityMessageHandler);
+  state.unityMessageHandler=(event)=>{
+    if(event.source!==frame.contentWindow||event.origin!==window.location.origin)return;
+    const message=event.data||{};
+    if(message.type==='daily-random-unity-progress')loading.textContent=`Unity 게임 준비 중 ${Math.round((message.progress||0)*100)}%`;
+    if(message.type==='daily-random-unity-ready')loading.classList.add('hidden');
+    if(message.type==='daily-random-unity-error')loading.textContent='게임을 불러오지 못했습니다. 다시 불러오기를 눌러주세요.';
+  };
+  window.addEventListener('message',state.unityMessageHandler);
+  app.querySelector('[data-reload]').onclick=()=>{loading.classList.remove('hidden');loading.textContent='Unity 게임 준비 중 0%';const src=frame.src;frame.src='about:blank';setTimeout(()=>frame.src=src,80)};
 }
 
 function food(){
@@ -55,10 +65,11 @@ function pickFood(){
 function playVideo(src,caption,done){
   const overlay=document.createElement('div');
   overlay.className='media-stage';
-  overlay.innerHTML=`<div class="media-loading" data-video-loading>영상 준비 중...</div><video playsinline preload="auto"><source src="${src}" type="video/mp4"></video><div class="media-caption">${caption}</div><button class="media-start" data-video-start>영상 재생</button><button class="media-skip" data-video-skip>건너뛰기</button>`;
+  overlay.innerHTML=`<div class="media-loading" data-video-loading>영상 준비 중...</div><video playsinline muted autoplay preload="auto"><source src="${src}" type="video/mp4"></video><div class="media-caption">${caption}</div><button class="media-start" data-video-start>영상 재생</button><button class="media-skip" data-video-skip>건너뛰기</button>`;
   document.body.appendChild(overlay);
 
   const v=overlay.querySelector('video');
+  v.muted=true;
   const loading=overlay.querySelector('[data-video-loading]');
   const startButton=overlay.querySelector('[data-video-start]');
   let finished=false;
