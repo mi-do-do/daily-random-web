@@ -10,9 +10,10 @@ const foods = [
   ['샌드위치','가벼운식사','부담 없이 깔끔하게 먹고 싶을 때 좋아요.'],['포케','가벼운식사','신선하고 든든한 한 그릇으로 균형을 맞춰봐요.'],['요거트볼','가벼운식사','가볍고 산뜻하게 채우고 싶은 날이에요.'],['아보카도토스트','가벼운식사','깔끔하면서도 든든한 브런치 느낌이 좋아요.'],['월남쌈','가벼운식사','신선하고 가벼운 식감이 필요한 날이에요.'],['쌀국수','가벼운식사','맑은 국물과 향긋한 면으로 부담 없이 가봐요.'],['반미','가벼운식사','바삭한 빵과 산뜻한 속재료가 기분을 바꿔줘요.'],['연어덮밥','가벼운식사','깔끔하고 든든한 한 그릇이 잘 어울려요.']
 ].map(([name,category,message]) => ({name,category,message,image:`assets/food/${name}.jpg`}));
 
-const state = { route:'home', history:[], foodCategory:'전체', recent:[], fortuneMode:'띠별 운세', fortuneSign:'쥐띠', fortuneYear:'1996년', unitType:'길이', from:'m', to:'km', unitValue:'1' };
+const state = { route:'home', history:[], foodCategory:'전체', recent:[], fortuneMode:'띠별 운세', fortuneSign:'쥐띠', fortuneYear:'1996년', fortuneBirthMonth:1, fortuneBirthDay:1, fortuneBirthHour:'모름', unitType:'길이', from:'m', to:'km', unitValue:'1' };
 const zodiacs = ['쥐띠','소띠','호랑이띠','토끼띠','용띠','뱀띠','말띠','양띠','원숭이띠','닭띠','개띠','돼지띠'];
 const stars = ['염소자리 (12/22~1/19)','물병자리 (1/20~2/18)','물고기자리 (2/19~3/20)','양자리 (3/21~4/19)','황소자리 (4/20~5/20)','쌍둥이자리 (5/21~6/21)','게자리 (6/22~7/22)','사자자리 (7/23~8/22)','처녀자리 (8/23~9/22)','천칭자리 (9/23~10/22)','전갈자리 (10/23~11/22)','사수자리 (11/23~12/21)'];
+const birthHours = ['모름','자시 (23~01시)','축시 (01~03시)','인시 (03~05시)','묘시 (05~07시)','진시 (07~09시)','사시 (09~11시)','오시 (11~13시)','미시 (13~15시)','신시 (15~17시)','유시 (17~19시)','술시 (19~21시)','해시 (21~23시)'];
 
 function layout(title, content, canBack=true) {
   app.innerHTML = `<header class="topbar"><button class="icon-button" data-back ${canBack?'':'disabled'} aria-label="뒤로 가기">‹</button><h1>${title}</h1><button class="icon-button" data-home aria-label="홈">⌂</button></header>${content}<div class="ad-slot">AdSense 광고 영역</div>`;
@@ -107,10 +108,16 @@ function foodResult(f){
 
 function fortune(){
   const isZodiac=state.fortuneMode==='띠별 운세';
-  layout('운세보기',`<main class="screen"><section class="card dark"><div class="eyebrow">FORTUNE CARD</div><h2>오늘의 흐름을 한 장에</h2><p>기준을 선택하면 날짜와 생년 정보를 조합한 간이 운세를 보여드려요.</p></section><section class="card"><div class="field"><label>운세 종류</label><select data-mode>${optionList(['띠별 운세','별자리 운세'],state.fortuneMode)}</select></div><div class="field"><label>${isZodiac?'띠':'별자리'}</label><select data-sign>${optionList(isZodiac?zodiacs:stars,state.fortuneSign)}</select></div>${isZodiac?`<div class="field"><label>출생 연도</label><select data-year>${optionList(yearsForZodiac(state.fortuneSign),state.fortuneYear)}</select></div>`:''}<button class="primary wide" data-fortune>결과 보기</button></section></main>`);
+  const birthYear=parseInt(state.fortuneYear,10)||new Date().getFullYear();
+  const dayCount=new Date(birthYear,state.fortuneBirthMonth,0).getDate();
+  if(state.fortuneBirthDay>dayCount)state.fortuneBirthDay=dayCount;
+  layout('운세보기',`<main class="screen"><section class="card dark"><div class="eyebrow">FORTUNE CARD</div><h2>오늘의 흐름을 한 장에</h2><p>${isZodiac?'생년월일과 출생시간으로 음양오행의 간이 균형을 계산해요.':'별자리와 현재 날짜의 행성 주기를 조합해 흐름을 살펴봐요.'}</p></section><section class="card"><div class="field"><label>운세 종류</label><select data-mode>${optionList(['띠별 운세','별자리 운세'],state.fortuneMode)}</select></div><div class="field"><label>${isZodiac?'띠':'별자리'}</label><select data-sign>${optionList(isZodiac?zodiacs:stars,state.fortuneSign)}</select></div>${isZodiac?`<div class="field"><label>출생 연도</label><select data-year>${optionList(yearsForZodiac(state.fortuneSign),state.fortuneYear)}</select></div><div class="fortune-birth-grid"><div class="field"><label>생월</label><select data-month>${optionList(Array.from({length:12},(_,i)=>`${i+1}월`),`${state.fortuneBirthMonth}월`)}</select></div><div class="field"><label>생일</label><select data-day>${optionList(Array.from({length:dayCount},(_,i)=>`${i+1}일`),`${state.fortuneBirthDay}일`)}</select></div></div><div class="field"><label>출생시간 <small>(선택)</small></label><select data-hour>${optionList(birthHours,state.fortuneBirthHour)}</select></div><p class="fortune-disclaimer">양력 기준의 간이 분석입니다. 출생시간을 모르면 시주를 제외하며, 전문 사주 감정을 대신하지 않습니다.</p>`:''}<button class="primary wide" data-fortune>결과 보기</button></section></main>`);
   app.querySelector('[data-mode]').onchange=e=>{state.fortuneMode=e.target.value;state.fortuneSign=state.fortuneMode==='띠별 운세'?'쥐띠':stars[0];fortune()};
   app.querySelector('[data-sign]').onchange=e=>{state.fortuneSign=e.target.value;if(isZodiac)state.fortuneYear=yearsForZodiac(e.target.value)[0];fortune()};
-  app.querySelector('[data-year]')?.addEventListener('change',e=>state.fortuneYear=e.target.value);
+  app.querySelector('[data-year]')?.addEventListener('change',e=>{state.fortuneYear=e.target.value;fortune()});
+  app.querySelector('[data-month]')?.addEventListener('change',e=>{state.fortuneBirthMonth=parseInt(e.target.value,10);fortune()});
+  app.querySelector('[data-day]')?.addEventListener('change',e=>state.fortuneBirthDay=parseInt(e.target.value,10));
+  app.querySelector('[data-hour]')?.addEventListener('change',e=>state.fortuneBirthHour=e.target.value);
   app.querySelector('[data-fortune]').onclick=()=>playVideo('assets/video/fortune_cat.mp4','점괘 분석 중',fortuneCard);
 }
 function yearsForZodiac(sign){const idx=zodiacs.indexOf(sign);const out=[];for(let y=new Date().getFullYear();y>=new Date().getFullYear()-120;y--)if(((y-4)%12+12)%12===idx)out.push(`${y}년`);return out}
@@ -140,13 +147,46 @@ function fortuneCard(){
 function fortuneDetails(){
   state.route='fortuneDetails';
   const results=state.fortuneResults||['오늘','이번 주','이번 달','올해'].map(period=>buildFortune(period));
-  layout('운세 결과',`<main class="screen fortune-results"><section class="fortune-summary"><div class="fortune-star">✦</div><div><span>${state.fortuneMode}</span><h2>${fortuneProfile()}</h2><p>선택한 정보와 기간별 흐름을 조합한 간이 운세입니다.</p></div></section><section class="fortune-period-grid">${results.map(result=>`<article class="fortune-period"><header><span>${result.period}</span><b>${result.score}점</b></header><h3>${result.title}</h3><p>${result.message}</p><footer><span>행운 색 ${result.color}</span><span>행운 숫자 ${result.number}</span></footer></article>`).join('')}</section><button class="primary wide fortune-retry" data-retry>다시 보기</button></main>`);
+  layout('운세 결과',`<main class="screen fortune-results"><section class="fortune-summary"><div class="fortune-star">✦</div><div><span>${state.fortuneMode}</span><h2>${fortuneProfile()}</h2><p>${state.fortuneMode==='띠별 운세'?'생년월일의 간이 사주와 오늘의 간지를 함께 분석했습니다.':'선택한 별자리와 기간별 행성 주기를 조합했습니다.'}</p></div></section>${fortuneAnalysisMarkup()}<section class="fortune-period-grid">${results.map(result=>`<article class="fortune-period"><header><span>${result.period}</span><b>${result.score}점</b></header><h3>${result.title}</h3><p>${result.message}</p><footer><span>행운 색 ${result.color}</span><span>행운 숫자 ${result.number}</span></footer></article>`).join('')}</section><button class="primary wide fortune-retry" data-retry>다시 보기</button></main>`);
   scrollTo(0,0);
   app.querySelector('[data-retry]').onclick=fortune;
 }
 
 function fortuneProfile(){return state.fortuneMode==='띠별 운세'?`${state.fortuneSign} · ${state.fortuneYear}`:state.fortuneSign}
 function positiveMod(value,modulus){const result=value%modulus;return result<0?result+modulus:result}
+const fortuneStems=['갑','을','병','정','무','기','경','신','임','계'];
+const fortuneBranches=['자','축','인','묘','진','사','오','미','신','유','술','해'];
+const fortuneElements=['목','화','토','금','수'];
+const stemElements=[0,0,1,1,2,2,3,3,4,4];
+const branchElements=[4,2,0,0,2,1,1,2,3,3,2,4];
+function fortuneAnalysisMarkup(){
+  if(state.fortuneMode!=='띠별 운세'){
+    const name=state.fortuneSign.split(' ')[0];
+    const index=Math.max(0,stars.findIndex(sign=>sign.startsWith(name)));
+    const element=['땅','공기','물','불'][positiveMod(index,4)];
+    return `<section class="fortune-basis"><header><div><span>분석 기준</span><h3>${name} · ${element} 원소</h3></div><small>현재 날짜의 태양·달·행성 주기 기반</small></header></section>`;
+  }
+  const profile=buildEasternProfile();
+  const max=Math.max(...profile.counts,1);
+  return `<section class="fortune-basis"><header><div><span>간이 사주 분석</span><h3>${profile.pillars.map(p=>p.label+' '+p.text).join(' · ')}</h3></div><small>${profile.birthLabel} · ${profile.yin>profile.yang?'음':'양'}의 기운이 조금 강한 편</small></header><div class="element-bars">${fortuneElements.map((element,index)=>`<div><b>${element}</b><span><i style="width:${Math.max(8,profile.counts[index]/max*100)}%"></i></span><em>${profile.counts[index]}</em></div>`).join('')}</div><p><strong>${profile.dominant} 기운</strong>이 가장 두드러지고 <strong>${profile.deficient} 기운</strong>은 보완이 필요해요. ${profile.hourKnown?'시주까지 포함한':'출생시간을 제외한'} 양력 기준 간이 분석이며, 입춘 전 출생은 전년도 간지를 적용합니다.</p></section>`;
+}
+function buildEasternProfile(){
+  const year=parseInt(state.fortuneYear,10)||new Date().getFullYear();
+  const month=state.fortuneBirthMonth||1;const day=state.fortuneBirthDay||1;
+  const pillarYear=month<2||(month===2&&day<4)?year-1:year;
+  const yearStem=positiveMod(pillarYear-4,10);const yearBranch=positiveMod(pillarYear-4,12);
+  let monthBranch=positiveMod(month,12);if(day<6)monthBranch=positiveMod(monthBranch-1,12);
+  const tigerStem=positiveMod(yearStem*2+2,10);const monthStem=positiveMod(tigerStem+positiveMod(monthBranch-2,12),10);
+  const birthDate=new Date(Date.UTC(year,month-1,day));const anchor=new Date(Date.UTC(2019,0,27));
+  const dayIndex=positiveMod(Math.round((birthDate-anchor)/86400000),60);const dayStem=dayIndex%10;const dayBranch=dayIndex%12;
+  const hourBranch=Math.max(-1,birthHours.indexOf(state.fortuneBirthHour)-1);const hourStem=hourBranch<0?-1:positiveMod((dayStem%5)*2+hourBranch,10);
+  const pillars=[{label:'년주',stem:yearStem,branch:yearBranch},{label:'월주',stem:monthStem,branch:monthBranch},{label:'일주',stem:dayStem,branch:dayBranch}];
+  if(hourBranch>=0)pillars.push({label:'시주',stem:hourStem,branch:hourBranch});
+  const counts=[0,0,0,0,0];let yang=0,yin=0;
+  pillars.forEach(p=>{counts[stemElements[p.stem]]++;counts[branchElements[p.branch]]++;if(p.stem%2===0)yang++;else yin++;if(p.branch%2===0)yang++;else yin++;p.text=fortuneStems[p.stem]+fortuneBranches[p.branch]});
+  const dominantIndex=counts.indexOf(Math.max(...counts));const deficientIndex=counts.indexOf(Math.min(...counts));
+  return{pillars,counts,dominant:fortuneElements[dominantIndex],deficient:fortuneElements[deficientIndex],dominantIndex,deficientIndex,yang,yin,hourKnown:hourBranch>=0,dayStem,birthLabel:`${year}.${month}.${day}`};
+}
 function periodDate(period){
   const now=new Date();const date=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   if(period==='이번 주'){const mondayOffset=(date.getDay()+6)%7;date.setDate(date.getDate()-mondayOffset+3)}
@@ -156,7 +196,7 @@ function periodDate(period){
 }
 function buildFortune(period){return state.fortuneMode==='띠별 운세'?buildEasternFortune(period):buildWesternFortune(period)}
 function buildEasternFortune(period){
-  const target=periodDate(period);const birthBranch=Math.max(0,zodiacs.indexOf(state.fortuneSign));const birthYear=parseInt(state.fortuneYear,10)||target.getFullYear();const birthStem=positiveMod(birthYear-4,10);
+  const target=periodDate(period);const profile=buildEasternProfile();const birthBranch=Math.max(0,zodiacs.indexOf(state.fortuneSign));const birthStem=profile.dayStem;
   let targetStem,targetBranch;
   if(period==='올해'){const pillarYear=target<new Date(target.getFullYear(),1,4)?target.getFullYear()-1:target.getFullYear();targetStem=positiveMod(pillarYear-4,10);targetBranch=positiveMod(pillarYear-4,12)}
   else{const anchor=new Date(2019,0,27);const dayIndex=positiveMod(Math.round((target-anchor)/86400000),60);targetStem=dayIndex%10;targetBranch=dayIndex%12}
@@ -167,11 +207,15 @@ function buildEasternFortune(period){
   else if([[8,0,4],[2,6,10],[11,3,7],[5,9,1]].some(group=>group.includes(birthBranch)&&group.includes(targetBranch))){score+=16;relation='삼합'}
   else if(isPair([0,7],[1,6],[2,5],[3,4],[8,11],[9,10])){score-=12;relation='해'}
   else if(birthBranch===targetBranch){score+=7;relation='동기'}
-  const birthElement=Math.floor(birthStem/2),targetElement=Math.floor(targetStem/2);const colors=['초록','빨강','황금','은색','파랑'];
+  const birthElement=stemElements[birthStem],targetElement=stemElements[targetStem];const colors=['초록','빨강','황금','은색','파랑'];
   if(positiveMod(targetElement+1,5)===birthElement){score+=9;relation+='·상생'}else if(positiveMod(birthElement+1,5)===targetElement)score-=3;
+  if(targetElement===profile.deficientIndex){score+=6;relation+='·보완'}
+  if(targetElement===profile.dominantIndex&&profile.counts[targetElement]>=3)score-=4;
+  if((targetStem%2===0&&profile.yang<profile.yin)||(targetStem%2===1&&profile.yin<profile.yang))score+=3;
   score=Math.max(20,Math.min(94,score));const number=positiveMod(targetBranch+birthStem+score,9)+1;
+  const elementAdvice={목:'계획을 글로 정리하고 새로운 배움을 시작해보세요.',화:'표현과 행동에 힘을 싣되 성급함은 줄이세요.',토:'생활 리듬과 약속을 안정적으로 지키는 것이 좋아요.',금:'기준을 세우고 불필요한 것을 정리해보세요.',수:'충분히 쉬고 대화 속에서 정보를 모아보세요.'}[profile.deficient];
   const advice=relation.includes('충')||relation.includes('해')?'대화는 단정적인 표현을 줄이고 지출은 보수적으로 잡으세요.':relation.includes('육합')||relation.includes('삼합')?'사람을 통해 기회가 들어오므로 제안과 연락을 열어두세요.':score>=65?'중요한 일을 먼저 처리하면 흐름을 살리기 좋아요.':'익숙한 일부터 차분히 정리하면 실수를 줄일 수 있어요.';
-  return fortuneResult(period,score,`${relation}의 흐름`,advice,colors[targetElement],number);
+  return fortuneResult(period,score,`${fortuneStems[targetStem]}${fortuneBranches[targetBranch]} · ${relation}의 흐름`,`${advice} 부족한 ${profile.deficient} 기운을 위해 ${elementAdvice}`,colors[targetElement],number);
 }
 function buildWesternFortune(period){
   const target=periodDate(period);const names=stars.map(sign=>sign.split(' ')[0]);const signIndex=Math.max(0,names.indexOf(state.fortuneSign.split(' ')[0]));

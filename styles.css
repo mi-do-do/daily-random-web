@@ -170,6 +170,25 @@ button { cursor: pointer; }
 .fortune-period p { min-height: 76px; color: var(--muted); line-height: 1.65; }
 .fortune-period footer { padding-top: 15px; border-top: 1px solid var(--line); color: #675d4d; font-size: 13px; font-weight: 800; }
 .fortune-retry { margin-top: 16px; background: var(--gold); color: var(--ink); }
+.fortune-birth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.fortune-birth-grid .field { margin-top: 0; }
+.fortune-disclaimer { margin: 4px 0 18px; padding: 12px 14px; background: #f6f0df; border-left: 3px solid var(--gold); color: #6f6759; font-size: 12px; line-height: 1.6; }
+.fortune-basis { margin: 0 0 16px; padding: 26px 28px; background: #fffaf0; border: 1px solid #ddcfaa; border-top: 4px solid var(--gold); }
+.fortune-basis header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+.fortune-basis header span { color: #8b6815; font-size: 12px; font-weight: 900; }
+.fortune-basis h3 { margin: 6px 0 0; font-size: 20px; }
+.fortune-basis header small { padding: 7px 10px; background: #f0e5c6; color: #6f5516; font-weight: 800; white-space: nowrap; }
+.element-bars { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; margin: 24px 0 18px; }
+.element-bars div { display: grid; grid-template-columns: 24px 1fr 18px; align-items: center; gap: 7px; }
+.element-bars b, .element-bars em { font-size: 13px; font-style: normal; }
+.element-bars span { height: 9px; overflow: hidden; background: #e4dece; }
+.element-bars i { display: block; height: 100%; background: var(--gold); }
+.element-bars div:nth-child(1) i { background: #3f9b73; }
+.element-bars div:nth-child(2) i { background: #df6849; }
+.element-bars div:nth-child(3) i { background: #c89a34; }
+.element-bars div:nth-child(4) i { background: #8c98aa; }
+.element-bars div:nth-child(5) i { background: #497ebc; }
+.fortune-basis > p { margin: 0; color: var(--muted); line-height: 1.7; }
 
 .game-board { min-height: 560px; position: relative; overflow: hidden; background: var(--navy); color: white; border: 4px solid #303746; margin: 16px 0; padding: 24px; }
 .roulette { width: 280px; height: 280px; max-width: 85vw; max-height: 85vw; margin: 16px auto; border-radius: 50%; border: 10px solid white; background: conic-gradient(#ff6542 0 25%, #e5aa27 0 50%, #168b72 0 75%, #6744c7 0); transition: transform 3.2s cubic-bezier(.12,.72,.18,1); }
@@ -274,6 +293,10 @@ button { cursor: pointer; }
   .fortune-period-grid { grid-template-columns: 1fr; }
   .fortune-period { min-height: 0; padding: 21px; }
   .fortune-period p { min-height: 0; }
+  .fortune-basis { padding: 21px; }
+  .fortune-basis header { display: block; }
+  .fortune-basis header small { display: inline-block; margin-top: 12px; white-space: normal; }
+  .element-bars { grid-template-columns: 1fr; gap: 8px; }
   .option-input-grid { grid-template-columns: 1fr; }
   .ladder-stage { padding-left: 12px; padding-right: 12px; }
   .ladder-web { height: 430px; }
