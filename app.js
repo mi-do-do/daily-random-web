@@ -105,14 +105,23 @@ function fortune(){
 function yearsForZodiac(sign){const idx=zodiacs.indexOf(sign);const out=[];for(let y=new Date().getFullYear();y>=new Date().getFullYear()-120;y--)if(((y-4)%12+12)%12===idx)out.push(`${y}년`);return out}
 function fortuneCard(){
   state.fortuneResults=['오늘','이번 주','이번 달','올해'].map(period=>buildFortune(period));
-  state.route='fortuneCard';layout('운세 카드',`<main class="screen fortune-reveal-screen"><section class="card dark fortune-guide"><h2>카드를 터치하세요</h2><p>카드가 뒤집히면 오늘부터 올해까지의 흐름이 공개됩니다.</p></section><button type="button" class="fortune-card" data-flip aria-label="운세 카드 뒤집기"><span class="fortune-inner"><span class="fortune-face fortune-front" aria-hidden="true"><span>✦</span><small>${fortuneProfile()}</small></span><span class="fortune-face fortune-back"><span><strong>운세를 확인했어요</strong><p>결과를 펼치는 중...</p><b>✦</b></span></span></span></button><button class="secondary wide" data-retry>다시 보기</button></main>`);
+  state.route='fortuneCard';layout('운세 카드',`<main class="screen fortune-reveal-screen"><section class="card dark fortune-guide"><h2>카드를 터치하세요</h2><p>카드가 뒤집히면 오늘부터 올해까지의 흐름이 공개됩니다.</p></section><div class="fortune-stage"><button type="button" class="fortune-card" data-flip aria-label="운세 카드 뒤집기"><span class="fortune-inner"><span class="fortune-face fortune-front" aria-hidden="true"><span class="fortune-glyph">✦</span><strong>오늘의 운세</strong><small>${fortuneProfile()}</small><em>TOUCH</em></span><span class="fortune-face fortune-back"><span><b>✦</b><strong>운세를 확인했어요</strong><p>결과를 펼치는 중...</p></span></span></span></button></div><button class="secondary wide fortune-reveal-retry" data-retry>다시 보기</button></main>`);
   scrollTo(0,0);
   const flipCard=app.querySelector('[data-flip]');
+  const flipInner=flipCard.querySelector('.fortune-inner');
+  let revealComplete=false;
+  const showDetails=()=>{
+    if(revealComplete)return;
+    revealComplete=true;
+    fortuneDetails();
+  };
   flipCard.addEventListener('click',()=>{
-    if(flipCard.classList.contains('flipped'))return;
+    if(flipCard.dataset.revealing==='true')return;
+    flipCard.dataset.revealing='true';
     flipCard.classList.add('flipped');
-    flipCard.disabled=true;
-    setTimeout(fortuneDetails,760);
+    flipCard.setAttribute('aria-label','운세 결과를 펼치는 중');
+    flipInner.addEventListener('animationend',showDetails,{once:true});
+    setTimeout(showDetails,900);
   });
   app.querySelector('[data-retry]').onclick=fortune;
 }
