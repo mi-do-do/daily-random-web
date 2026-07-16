@@ -66,6 +66,9 @@ button { cursor: pointer; }
 .field input, .field select { width: 100%; min-height: 48px; border: 1px solid var(--line); background: white; padding: 0 12px; color: var(--ink); }
 .row { display: grid; grid-template-columns: 1fr 44px 1fr; align-items: end; gap: 8px; }
 .swap { height: 48px; border: 1px solid var(--line); background: white; }
+.unit-convert-button { margin: 4px 0 16px; }
+.unit-result { margin: 0; min-height: 142px; display: grid; align-content: center; }
+.unit-result h2 { margin-top: 8px; overflow-wrap: anywhere; }
 
 .primary, .secondary { min-height: 52px; border: 0; padding: 0 18px; font-weight: 900; }
 .primary { background: var(--coral); color: white; }
@@ -238,7 +241,7 @@ button { cursor: pointer; }
 .unity-intro strong { font-size: 24px; }
 .unity-intro small { color: #b9bec8; }
 .unity-intro button { min-height: 46px; padding: 0 18px; white-space: nowrap; }
-.unity-frame-shell { position: relative; width: min(100%, 560px); height: min(calc(100vh - 220px), 880px); min-height: 620px; margin: 0 auto; overflow: hidden; border: 1px solid #343b48; background: #080a0f; box-shadow: 0 18px 52px rgba(0,0,0,.35); }
+.unity-frame-shell { position: relative; width: min(100%, 540px); height: auto; aspect-ratio: 9 / 16; margin: 0 auto; overflow: hidden; border: 1px solid #343b48; background: #080a0f; box-shadow: 0 18px 52px rgba(0,0,0,.35); }
 .unity-frame { position: relative; z-index: 2; width: 100%; height: 100%; border: 0; background: #080a0f; }
 .unity-loading { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; color: #e6d18e; font-weight: 900; }
 .unity-loading.hidden { display: none; }
@@ -282,6 +285,6 @@ button { cursor: pointer; }
   .unity-intro small { display: none; }
   .unity-intro strong { font-size: 19px; }
   .unity-intro button { min-height: 40px; padding: 0 10px; font-size: 12px; }
-  .unity-frame-shell { width: 100%; height: calc(100vh - 150px); min-height: 560px; border-left: 0; border-right: 0; }
+  .unity-frame-shell { width: 100%; height: auto; min-height: 0; aspect-ratio: 9 / 16; border-left: 0; border-right: 0; }
   .ad-slot { height: calc(68px + env(safe-area-inset-bottom)); }
 }

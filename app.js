@@ -10,7 +10,7 @@ const foods = [
   ['샌드위치','가벼운식사','부담 없이 깔끔하게 먹고 싶을 때 좋아요.'],['포케','가벼운식사','신선하고 든든한 한 그릇으로 균형을 맞춰봐요.'],['요거트볼','가벼운식사','가볍고 산뜻하게 채우고 싶은 날이에요.'],['아보카도토스트','가벼운식사','깔끔하면서도 든든한 브런치 느낌이 좋아요.'],['월남쌈','가벼운식사','신선하고 가벼운 식감이 필요한 날이에요.'],['쌀국수','가벼운식사','맑은 국물과 향긋한 면으로 부담 없이 가봐요.'],['반미','가벼운식사','바삭한 빵과 산뜻한 속재료가 기분을 바꿔줘요.'],['연어덮밥','가벼운식사','깔끔하고 든든한 한 그릇이 잘 어울려요.']
 ].map(([name,category,message]) => ({name,category,message,image:`assets/food/${name}.jpg`}));
 
-const state = { route:'home', history:[], foodCategory:'전체', recent:[], fortuneMode:'띠별 운세', fortuneSign:'쥐띠', fortuneYear:'1996년' };
+const state = { route:'home', history:[], foodCategory:'전체', recent:[], fortuneMode:'띠별 운세', fortuneSign:'쥐띠', fortuneYear:'1996년', unitType:'길이', from:'m', to:'km', unitValue:'1' };
 const zodiacs = ['쥐띠','소띠','호랑이띠','토끼띠','용띠','뱀띠','말띠','양띠','원숭이띠','닭띠','개띠','돼지띠'];
 const stars = ['염소자리 (12/22~1/19)','물병자리 (1/20~2/18)','물고기자리 (2/19~3/20)','양자리 (3/21~4/19)','황소자리 (4/20~5/20)','쌍둥이자리 (5/21~6/21)','게자리 (6/22~7/22)','사자자리 (7/23~8/22)','처녀자리 (8/23~9/22)','천칭자리 (9/23~10/22)','전갈자리 (10/23~11/22)','사수자리 (11/23~12/21)'];
 
@@ -35,7 +35,7 @@ function menu(title,desc,symbol,color,route){return `<button class="menu-card" s
 function unityGames(){unityView('랜덤게임','games','사다리타기·레이싱·룰렛·카드 뽑기')}
 function unityDaily(){unityView('오늘의 게임','daily','들어갈 때마다 달라지는 30초 미니게임')}
 function unityView(title,route,description){
-  layout(title,`<main class="unity-screen"><section class="unity-intro"><div><span>UNITY PLAY</span><strong>${title}</strong><small>${description}</small></div><button class="secondary" data-reload>게임 다시 불러오기</button></section><section class="unity-frame-shell"><div class="unity-loading">Unity 게임을 준비하고 있어요...</div><iframe class="unity-frame" title="${title}" src="unity/index.html?route=${route}" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe></section></main>`);
+  layout(title,`<main class="unity-screen"><section class="unity-intro"><div><span>UNITY PLAY</span><strong>${title}</strong><small>${description}</small></div><button class="secondary" data-reload>게임 다시 불러오기</button></section><section class="unity-frame-shell"><div class="unity-loading">Unity 게임을 준비하고 있어요...</div><iframe class="unity-frame" title="${title}" src="unity/index.html?route=${route}&v=10" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe></section></main>`);
   const frame=app.querySelector('.unity-frame');frame.addEventListener('load',()=>app.querySelector('.unity-loading')?.classList.add('hidden'));
   app.querySelector('[data-reload]').onclick=()=>{const src=frame.src;frame.src='about:blank';setTimeout(()=>frame.src=src,80)};
 }
@@ -180,11 +180,36 @@ function fortuneResult(period,score,basis,advice,color,number){
 }
 
 const units={길이:{m:1,km:1000,cm:.01,mm:.001,inch:.0254,ft:.3048},무게:{kg:1,g:.001,lb:.453592,oz:.0283495},부피:{L:1,mL:.001,'m³':1000,'컵':.24,'큰술':.015},속도:{'km/h':1,'m/s':3.6,mph:1.609344,knot:1.852},온도:{'°C':'c','°F':'f','K':'k'}};
-function unit(){state.unitType ||= '길이';const list=Object.keys(units[state.unitType]);state.from ||= list[0];state.to ||= list[1];if(!list.includes(state.from)){state.from=list[0];state.to=list[1]}
-  layout('단위변환기',`<main class="screen"><section class="card dark"><div class="eyebrow">UNIT CONVERTER</div><h2>필요한 단위를 바로</h2><p>숫자를 입력하면 기다리지 않고 즉시 변환해요.</p></section><section class="card"><div class="field"><label>종류</label><select data-type>${optionList(Object.keys(units),state.unitType)}</select></div><div class="row"><div class="field"><label>변환 전</label><select data-from>${optionList(list,state.from)}</select></div><button class="swap" data-swap>⇄</button><div class="field"><label>변환 후</label><select data-to>${optionList(list,state.to)}</select></div></div><div class="field"><label>값</label><input inputmode="decimal" data-value value="${state.unitValue||1}"></div><section class="card dark"><small>변환 결과</small><h2 data-output></h2></section></section></main>`);calcUnit();
-  app.querySelector('[data-type]').onchange=e=>{state.unitType=e.target.value;state.from=null;unit()};app.querySelector('[data-from]').onchange=e=>{state.from=e.target.value;calcUnit()};app.querySelector('[data-to]').onchange=e=>{state.to=e.target.value;calcUnit()};app.querySelector('[data-value]').oninput=e=>{state.unitValue=e.target.value;calcUnit()};app.querySelector('[data-swap]').onclick=()=>{[state.from,state.to]=[state.to,state.from];unit()};
+function normalizeUnitState(reset=false){
+  if(!units[state.unitType])state.unitType=Object.keys(units)[0];
+  const list=Object.keys(units[state.unitType]);
+  if(reset||!list.includes(state.from))state.from=list[0];
+  if(reset||!list.includes(state.to))state.to=list[Math.min(1,list.length-1)];
+  if(state.unitValue===undefined||state.unitValue===null)state.unitValue='1';
+  return list;
 }
-function calcUnit(){const value=parseFloat(app.querySelector('[data-value]')?.value)||0;let result;if(state.unitType==='온도'){const c=state.from==='°C'?value:state.from==='°F'?(value-32)*5/9:value-273.15;result=state.to==='°C'?c:state.to==='°F'?c*9/5+32:c+273.15}else result=value*units[state.unitType][state.from]/units[state.unitType][state.to];app.querySelector('[data-output]').textContent=`${result.toLocaleString(undefined,{maximumFractionDigits:6})} ${state.to}`}
+function unit(){const list=normalizeUnitState();
+  layout('단위변환기',`<main class="screen"><section class="card dark"><div class="eyebrow">UNIT CONVERTER</div><h2>필요한 단위를 바로</h2><p>숫자나 단위를 바꾸면 즉시 계산되며, 변환하기 버튼으로 다시 계산할 수도 있어요.</p></section><section class="card"><div class="field"><label>종류</label><select data-type>${optionList(Object.keys(units),state.unitType)}</select></div><div class="row"><div class="field"><label>변환 전</label><select data-from>${optionList(list,state.from)}</select></div><button class="swap" data-swap aria-label="변환 단위 맞바꾸기">⇄</button><div class="field"><label>변환 후</label><select data-to>${optionList(list,state.to)}</select></div></div><div class="field"><label>값</label><input inputmode="decimal" data-value value="${state.unitValue}"></div><button class="primary green wide unit-convert-button" data-convert>변환하기</button><section class="card dark unit-result"><small>변환 결과</small><h2 data-output></h2></section></section></main>`);
+  const valueInput=app.querySelector('[data-value]');
+  app.querySelector('[data-type]').onchange=e=>{state.unitType=e.target.value;normalizeUnitState(true);unit()};
+  app.querySelector('[data-from]').onchange=e=>{state.from=e.target.value;calcUnit()};
+  app.querySelector('[data-to]').onchange=e=>{state.to=e.target.value;calcUnit()};
+  valueInput.oninput=valueInput.onchange=e=>{state.unitValue=e.target.value;calcUnit()};
+  app.querySelector('[data-convert]').onclick=calcUnit;
+  app.querySelector('[data-swap]').onclick=()=>{[state.from,state.to]=[state.to,state.from];unit()};
+  calcUnit();
+}
+function calcUnit(){
+  normalizeUnitState();
+  const output=app.querySelector('[data-output]');
+  const raw=app.querySelector('[data-value]')?.value??state.unitValue;
+  const value=Number(String(raw).replace(',','.'));
+  if(!Number.isFinite(value)){if(output)output.textContent='숫자를 입력해주세요';return}
+  let result;
+  if(state.unitType==='온도'){const c=state.from==='°C'?value:state.from==='°F'?(value-32)*5/9:value-273.15;result=state.to==='°C'?c:state.to==='°F'?c*9/5+32:c+273.15}
+  else result=value*units[state.unitType][state.from]/units[state.unitType][state.to];
+  if(output)output.textContent=`${result.toLocaleString(undefined,{maximumFractionDigits:6})} ${state.to}`;
+}
 
 function randomMenu(){layout('랜덤게임',`<main class="screen"><section class="card dark"><div class="eyebrow">RANDOM GAME LAB</div><h2>우연을 조금 더 재미있게</h2><p>여럿이 함께 지켜보는 네 가지 추첨 게임이에요.</p></section><section class="grid">${menu('사다리타기','경로를 따라 결과 확인','▼','#ff6542','ladder')}${menu('레이싱','끝까지 바뀌는 순위','▶','#168b72','race')}${menu('룰렛','직접 적고 돌리는 원판','○','#e5aa27','roulette')}${menu('카드 뽑기','숨겨진 숫자와 당첨','■','#6744c7','cards')}</section></main>`);app.querySelectorAll('[data-route]').forEach(b=>b.onclick=()=>navigate(b.dataset.route))}
 function gameShell(title,body){layout(title,`<main class="screen">${body}</main>`)}
